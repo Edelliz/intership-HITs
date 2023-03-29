@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: "internship-HITS"
+  datasource:
+    url: jdbc:postgresql://localhost:5432/internship-HITS
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
