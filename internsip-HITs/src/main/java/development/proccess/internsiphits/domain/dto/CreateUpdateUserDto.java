@@ -10,9 +10,6 @@ public class CreateUpdateUserDto {
     private static final String MESSAGE = "Обязательное поле";
 
     @NotBlank(message = MESSAGE)
-    private Role role;
-
-    @NotBlank(message = MESSAGE)
     private String name;
 
     @NotBlank(message = MESSAGE)
@@ -26,6 +23,8 @@ public class CreateUpdateUserDto {
 
     @NotBlank(message = MESSAGE)
     private String password;
+
+    private Role role;
 
     private String companyName;
 }
