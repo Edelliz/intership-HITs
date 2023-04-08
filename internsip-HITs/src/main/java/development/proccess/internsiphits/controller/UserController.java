@@ -26,7 +26,7 @@ public class UserController {
     @GetMapping(ID)
     public UserEntity getStudentById(
             @PathVariable Long id
-    ) throws Exception {
+    ) {
         return service.getUserById(id);
     }
 
