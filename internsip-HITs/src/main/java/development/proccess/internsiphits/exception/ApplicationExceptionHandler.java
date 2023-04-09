@@ -1,5 +1,6 @@
 package development.proccess.internsiphits.exception;
 
+import development.proccess.internsiphits.exception.user.UnauthorizedException;
 import development.proccess.internsiphits.exception.user.UserAlreadyExistsException;
 import development.proccess.internsiphits.exception.user.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -46,5 +47,12 @@ public class ApplicationExceptionHandler {
     public ApplicationException handleUserAlreadyExists(UserAlreadyExistsException exception) {
         log.error(exception.getMessage(), exception);
         return new ApplicationException(exception.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApplicationException handleUnauthorizedException(UnauthorizedException exception) {
+        log.error(exception.getMessage(), exception);
+        return new ApplicationException(exception.getMessage(), HttpStatus.UNAUTHORIZED, LocalDateTime.now());
     }
 }
