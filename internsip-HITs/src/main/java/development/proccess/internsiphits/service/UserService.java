@@ -6,6 +6,7 @@ import development.proccess.internsiphits.exception.user.UserAlreadyExistsExcept
 import development.proccess.internsiphits.exception.user.UserNotFoundException;
 import development.proccess.internsiphits.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class UserService {
     private static final String USER_NOT_FOUND_MESSAGE = "Пользователь с данным Email не найден";
     private static final String USER_EXISTS_MESSAGE = "Пользователь с данным Email уже существует";
     private final UserRepository repository;
+    private final PasswordEncoder encoder;
 
     public List<UserEntity> getAllUsers() {
         return repository.findAll();
@@ -41,7 +43,7 @@ public class UserService {
                         .lastName(dto.getLastName())
                         .role(dto.getRole())
                         .email(dto.getEmail())
-                        .password(dto.getPassword())
+                        .password(encoder.encode(dto.getPassword()))
                         .companyName(dto.getCompanyName())
                         .build()
         );
