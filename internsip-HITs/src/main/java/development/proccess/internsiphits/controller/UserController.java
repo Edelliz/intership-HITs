@@ -25,7 +25,7 @@ public class UserController {
 
     @GetMapping(ID)
     public UserEntity getStudentById(
-            @PathVariable Long id
+            @PathVariable Integer id
     ) {
         return service.getUserById(id);
     }
@@ -39,7 +39,7 @@ public class UserController {
 
     @PutMapping(ID)
     public UserEntity updateUser(
-            @PathVariable Long id,
+            @PathVariable Integer id,
             @RequestBody @Valid CreateUpdateUserDto dto
     ) throws Exception {
         return service.updateUser(id, dto);
@@ -47,7 +47,7 @@ public class UserController {
 
     @DeleteMapping(ID)
     public void deleteUser(
-            @PathVariable Long id
+            @PathVariable Integer id
     ) {
         service.deleteUser(id);
     }

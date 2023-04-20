@@ -1,5 +1,6 @@
 package development.proccess.internsiphits.domain.entity;
 
+import development.proccess.internsiphits.domain.entity.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Token {
+public class TokenEntity {
 
     @Id
     @GeneratedValue
