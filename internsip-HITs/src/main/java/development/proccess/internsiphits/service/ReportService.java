@@ -1,27 +1,34 @@
 package development.proccess.internsiphits.service;
 
 import development.proccess.internsiphits.domain.dto.ReportResponse;
-import development.proccess.internsiphits.domain.dto.CreateReportDto;
 import development.proccess.internsiphits.domain.entity.ReportEntity;
 import development.proccess.internsiphits.domain.entity.UserEntity;
+import development.proccess.internsiphits.domain.entity.enums.SupervisorName;
 import development.proccess.internsiphits.exception.user.UserNotFoundException;
 import development.proccess.internsiphits.repository.ReportRepository;
 import development.proccess.internsiphits.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import static development.proccess.internsiphits.exception.user.UserExceptionText.USER_NOT_FOUND_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReportService {
 
     private static final String TEMPLATE_PATH = "classpath:templates/input.docx";
@@ -36,21 +43,12 @@ public class ReportService {
         reportRepository.deleteByUserId(userId);
     }
 
-    public ReportResponse createReport(Integer userId, CreateReportDto body) throws Exception {
+    public ReportResponse createReport(Integer userId, String supervisorName, String characteristic, MultipartFile file) throws Exception {
         UserEntity user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE)
         );
         try (FileInputStream template = new FileInputStream(ResourceUtils.getFile(TEMPLATE_PATH))) {
-            XWPFDocument document = new XWPFDocument(template);
-            setDataIntoTable(document, "StudentFullName", (user.getSurname() + " " + user.getName() + " " + user.getLastName()));
-            setDataIntoTable(document, "CompanyFullName", user.getCompanyName());
-            setDataIntoRow(document, "CompanyFullName", user.getCompanyName());
-            setDataIntoTable(document, "StudentFullCharacteristic", body.getStudentCharacteristic());
-            setDataIntoTable(document, "SupervisorFullName", body.getSupervisorName().getFullName());
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            document.write(outputStream);
-            document.close();
-            byte[] bytes = outputStream.toByteArray();
+            byte[] bytes = setData(supervisorName, characteristic, user, template, file);
             ReportEntity fileEntity = new ReportEntity();
             fileEntity.setUserId(userId);
             fileEntity.setName("test.docx");
@@ -61,6 +59,89 @@ public class ReportService {
             return mapToReportResponse(fileEntity);
         } catch (Exception e) {
             throw new Exception(e);
+        }
+    }
+
+    private byte[] setData(
+            String supervisorName,
+            String characteristic,
+            UserEntity user,
+            FileInputStream template,
+            MultipartFile file
+    ) throws IOException {
+        XWPFDocument document = new XWPFDocument(template);
+        setDataIntoTable(document, "StudentFullName", (user.getSurname() + " " + user.getName() + " " + user.getLastName()));
+        setDataIntoTable(document, "CompanyFullName", user.getCompanyName());
+        setDataIntoTable(document, "StudentFullCharacteristic", characteristic);
+        setDataIntoTable(document, "SupervisorFullName", SupervisorName.valueOf(supervisorName).getFullName());
+
+        String fileName = UUID.randomUUID() + Objects.requireNonNull(file.getOriginalFilename());
+        File convFile = new File(fileName);
+        if (convFile.createNewFile()) {
+            FileOutputStream fos = new FileOutputStream(convFile);
+            fos.write(file.getBytes());
+            fos.close();
+        }
+        FileInputStream fis = new FileInputStream(convFile.getAbsolutePath());
+        XWPFDocument tasks = new XWPFDocument(fis);
+
+        String marker = "AllTasksList";
+
+        XWPFParagraph resultParagraph = null;
+        for (XWPFParagraph paragraph : document.getParagraphs()) {
+            boolean found = false;
+            List<XWPFRun> runs = paragraph.getRuns();
+            if (runs != null && !runs.isEmpty()) {
+                for (XWPFRun run : runs) {
+                    String text = run.getText(0);
+                    if (text != null && text.contains(marker)) {
+                        found = true;
+                        text = text.replace(marker, "");
+                        run.setText(text, 0);
+                    }
+                }
+            }
+            if (found) {
+                resultParagraph = paragraph;
+                break;
+            }
+        }
+        if (resultParagraph != null) {
+            copyAllRunsToAnotherParagraph(tasks.getParagraphs().get(0), resultParagraph);
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        document.write(outputStream);
+        document.close();
+        tasks.close();
+        Path fileToDelete = Paths.get(fileName);
+        Files.delete(fileToDelete);
+        return outputStream.toByteArray();
+    }
+
+    private static void copyAllRunsToAnotherParagraph(XWPFParagraph oldPar, XWPFParagraph newPar) {
+        final int DEFAULT_FONT_SIZE = 10;
+
+        for (XWPFRun run : oldPar.getRuns()) {
+            String textInRun = run.getText(0);
+            if (textInRun == null || textInRun.isEmpty()) {
+                continue;
+            }
+
+            int fontSize = run.getFontSize();
+
+            XWPFRun newRun = newPar.createRun();
+
+            // Copy text
+            newRun.setText(textInRun);
+
+            // Apply the same style
+            newRun.setFontSize((fontSize == -1) ? DEFAULT_FONT_SIZE : run.getFontSize());
+            newRun.setFontFamily(run.getFontFamily());
+            newRun.setBold(run.isBold());
+            newRun.setItalic(run.isItalic());
+            newRun.setStrike(run.isStrike());
+            newRun.setColor(run.getColor());
         }
     }
 
@@ -88,21 +169,6 @@ public class ReportService {
         fileResponse.setUrl(downloadURL);
 
         return fileResponse;
-    }
-
-    private static void setDataIntoRow(XWPFDocument document, String target, String data) {
-        for (XWPFParagraph p : document.getParagraphs()) {
-            List<XWPFRun> runs = p.getRuns();
-            if (runs != null) {
-                for (XWPFRun r : runs) {
-                    String text = r.getText(0);
-                    if (text != null && text.contains(target)) {
-                        text = text.replace(target, data);
-                        r.setText(text, 0);
-                    }
-                }
-            }
-        }
     }
 
     private static void setDataIntoTable(XWPFDocument document, String target, String data) {

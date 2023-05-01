@@ -1,7 +1,6 @@
 package development.proccess.internsiphits.controller;
 
 import development.proccess.internsiphits.domain.dto.ReportResponse;
-import development.proccess.internsiphits.domain.dto.CreateReportDto;
 import development.proccess.internsiphits.domain.entity.ReportEntity;
 import development.proccess.internsiphits.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +28,11 @@ public class ReportController {
     @PostMapping("/{userId}")
     public ReportResponse createReport(
             @PathVariable Integer userId,
-            @RequestBody CreateReportDto body
+            @RequestParam String supervisorName,
+            @RequestParam String characteristic,
+            @RequestParam("file") MultipartFile file
     ) throws Exception {
-        return service.createReport(userId, body);
+        return service.createReport(userId, supervisorName, characteristic, file);
     }
 
     @GetMapping("/{userId}")
