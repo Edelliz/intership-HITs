@@ -1,6 +1,7 @@
 package development.proccess.internsiphits.controller;
 
 import development.proccess.internsiphits.domain.dto.ReportResponse;
+import development.proccess.internsiphits.domain.dto.UpdateReportDto;
 import development.proccess.internsiphits.domain.entity.ReportEntity;
 import development.proccess.internsiphits.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class ReportController {
     private final ReportService service;
 
     @GetMapping
-    public List<ReportEntity> getAllReports() {
+    public List<ReportResponse> getAllReports() {
         return service.getAllReports();
     }
 
@@ -51,6 +52,11 @@ public class ReportController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + report.getName() + "\"")
                 .contentType(MediaType.valueOf(report.getContentType()))
                 .body(report.getData());
+    }
+
+    @PutMapping("/{userId}")
+    public ReportResponse updateReport(@PathVariable Integer userId, @RequestBody UpdateReportDto dto) {
+        return service.updateReport(userId, dto);
     }
 
     @DeleteMapping("/{userId}")

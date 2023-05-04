@@ -5,19 +5,7 @@ import development.proccess.internsiphits.domain.entity.enums.ReportStatus;
 import lombok.Data;
 
 @Data
-public class ReportResponse {
-
-    private Integer id;
-
-    private Integer userId;
-
-    private String name;
-
-    private Long size;
-
-    private String url;
-
-    private String contentType;
+public class UpdateReportDto {
 
     private Mark mark;
 

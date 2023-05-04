@@ -1,6 +1,7 @@
 package development.proccess.internsiphits.domain.entity;
 
 import development.proccess.internsiphits.domain.entity.enums.Mark;
+import development.proccess.internsiphits.domain.entity.enums.ReportStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,7 +22,11 @@ public class ReportEntity {
 
     private Long size;
 
+    @Enumerated(value = EnumType.STRING)
     private Mark mark;
+
+    @Enumerated(value = EnumType.STRING)
+    private ReportStatus status;
 
     @Lob
     private byte[] data;

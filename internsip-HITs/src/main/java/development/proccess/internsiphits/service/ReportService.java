@@ -1,14 +1,16 @@
 package development.proccess.internsiphits.service;
 
 import development.proccess.internsiphits.domain.dto.ReportResponse;
+import development.proccess.internsiphits.domain.dto.UpdateReportDto;
 import development.proccess.internsiphits.domain.entity.ReportEntity;
 import development.proccess.internsiphits.domain.entity.UserEntity;
+import development.proccess.internsiphits.domain.entity.enums.ReportStatus;
 import development.proccess.internsiphits.domain.entity.enums.SupervisorName;
 import development.proccess.internsiphits.exception.user.UserNotFoundException;
 import development.proccess.internsiphits.repository.ReportRepository;
 import development.proccess.internsiphits.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
@@ -19,24 +21,38 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static development.proccess.internsiphits.exception.user.UserExceptionText.USER_NOT_FOUND_MESSAGE;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Transactional
 public class ReportService {
 
     private static final String TEMPLATE_PATH = "classpath:templates/input.docx";
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
 
-    public List<ReportEntity> getAllReports() {
-        return reportRepository.findAll();
+    public ReportResponse updateReport(Integer userId, UpdateReportDto dto) {
+        ReportEntity entity = reportRepository.findByUserId(userId);
+        if (entity == null) {
+            //TODO: Добавить полноченную обработку через exception handler
+            throw new IllegalArgumentException("There's no report with such user id");
+        }
+        entity.setStatus(dto.getStatus());
+        entity.setMark(dto.getMark());
+        reportRepository.save(entity);
+        return mapToReportResponse(entity);
+    }
+
+    public List<ReportResponse> getAllReports() {
+        List<ReportEntity> reports = reportRepository.findAll();
+        List<ReportResponse> responses = new ArrayList<>();
+        for (ReportEntity entity : reports) {
+            responses.add(mapToReportResponse(entity));
+        }
+        return responses;
     }
 
     public void deleteReport(Integer userId) {
@@ -55,6 +71,7 @@ public class ReportService {
             fileEntity.setContentType("application/msword");
             fileEntity.setData(bytes);
             fileEntity.setSize((long) bytes.length);
+            fileEntity.setStatus(ReportStatus.CREATED);
             fileEntity = reportRepository.save(fileEntity);
             return mapToReportResponse(fileEntity);
         } catch (Exception e) {
@@ -167,6 +184,8 @@ public class ReportService {
         fileResponse.setContentType(reportEntity.getContentType());
         fileResponse.setSize(reportEntity.getSize());
         fileResponse.setUrl(downloadURL);
+        fileResponse.setMark(reportEntity.getMark());
+        fileResponse.setStatus(reportEntity.getStatus());
 
         return fileResponse;
     }
