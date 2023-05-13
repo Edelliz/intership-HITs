@@ -1,5 +1,6 @@
 package development.proccess.internsiphits.exception;
 
+import development.proccess.internsiphits.exception.characteristics.CharacteristicsException;
 import development.proccess.internsiphits.exception.user.UnauthorizedException;
 import development.proccess.internsiphits.exception.user.UserAlreadyExistsException;
 import development.proccess.internsiphits.exception.user.UserNotFoundException;
@@ -54,5 +55,12 @@ public class ApplicationExceptionHandler {
     public ApplicationException handleUnauthorizedException(UnauthorizedException exception) {
         log.error(exception.getMessage(), exception);
         return new ApplicationException(exception.getMessage(), HttpStatus.UNAUTHORIZED, LocalDateTime.now());
+    }
+
+    @ExceptionHandler(CharacteristicsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApplicationException handleCharacteristicsException(CharacteristicsException exception) {
+        log.error(exception.getMessage(), exception);
+        return new ApplicationException(exception.getMessage(), HttpStatus.BAD_REQUEST, LocalDateTime.now());
     }
 }

@@ -30,10 +30,9 @@ public class ReportController {
     public ReportResponse createReport(
             @PathVariable Integer userId,
             @RequestParam String supervisorName,
-            @RequestParam String characteristic,
             @RequestParam("file") MultipartFile file
     ) throws Exception {
-        return service.createReport(userId, supervisorName, characteristic, file);
+        return service.createReport(userId, supervisorName, file);
     }
 
     @GetMapping("/{userId}")

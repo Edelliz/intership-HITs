@@ -2,11 +2,14 @@ package development.proccess.internsiphits.service;
 
 import development.proccess.internsiphits.domain.dto.ReportResponse;
 import development.proccess.internsiphits.domain.dto.UpdateReportDto;
+import development.proccess.internsiphits.domain.entity.CharacteristicsEntity;
 import development.proccess.internsiphits.domain.entity.ReportEntity;
 import development.proccess.internsiphits.domain.entity.UserEntity;
 import development.proccess.internsiphits.domain.entity.enums.ReportStatus;
 import development.proccess.internsiphits.domain.entity.enums.SupervisorName;
+import development.proccess.internsiphits.exception.characteristics.CharacteristicsException;
 import development.proccess.internsiphits.exception.user.UserNotFoundException;
+import development.proccess.internsiphits.repository.CharacteristicsRepository;
 import development.proccess.internsiphits.repository.ReportRepository;
 import development.proccess.internsiphits.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -32,6 +35,7 @@ public class ReportService {
 
     private static final String TEMPLATE_PATH = "classpath:templates/input.docx";
     private final ReportRepository reportRepository;
+    private final CharacteristicsRepository characteristicsRepository;
     private final UserRepository userRepository;
 
     public ReportResponse updateReport(Integer userId, UpdateReportDto dto) {
@@ -59,12 +63,16 @@ public class ReportService {
         reportRepository.deleteByUserId(userId);
     }
 
-    public ReportResponse createReport(Integer userId, String supervisorName, String characteristic, MultipartFile file) throws Exception {
+    public ReportResponse createReport(Integer userId, String supervisorName, MultipartFile file) throws Exception {
         UserEntity user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE)
         );
+        CharacteristicsEntity characteristic = characteristicsRepository.findByUserId(userId);
+        if (characteristic == null) {
+            throw new CharacteristicsException("There's no characteristics for this user");
+        }
         try (FileInputStream template = new FileInputStream(ResourceUtils.getFile(TEMPLATE_PATH))) {
-            byte[] bytes = setData(supervisorName, characteristic, user, template, file);
+            byte[] bytes = setData(supervisorName, characteristic.getContent(), user, template, file);
             ReportEntity fileEntity = new ReportEntity();
             fileEntity.setUserId(userId);
             fileEntity.setName("test.docx");
