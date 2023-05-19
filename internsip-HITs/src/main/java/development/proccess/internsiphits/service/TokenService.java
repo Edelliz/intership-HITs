@@ -3,8 +3,8 @@ package development.proccess.internsiphits.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import development.proccess.internsiphits.domain.dto.AuthenticationRequest;
 import development.proccess.internsiphits.domain.dto.AuthenticationResponse;
-import development.proccess.internsiphits.domain.entity.Token;
-import development.proccess.internsiphits.domain.entity.TokenType;
+import development.proccess.internsiphits.domain.entity.TokenEntity;
+import development.proccess.internsiphits.domain.entity.enums.TokenType;
 import development.proccess.internsiphits.domain.entity.UserEntity;
 import development.proccess.internsiphits.repository.TokenRepository;
 import development.proccess.internsiphits.repository.UserRepository;
@@ -48,7 +48,7 @@ public class TokenService {
     }
 
     private void saveUserToken(UserEntity user, String jwtToken) {
-        var token = Token.builder()
+        var token = TokenEntity.builder()
                 .user(user)
                 .token(jwtToken)
                 .tokenType(TokenType.BEARER)
@@ -62,9 +62,9 @@ public class TokenService {
         var validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
         if (validUserTokens.isEmpty())
             return;
-        validUserTokens.forEach(token -> {
-            token.setExpired(true);
-            token.setRevoked(true);
+        validUserTokens.forEach(tokenEntity -> {
+            tokenEntity.setExpired(true);
+            tokenEntity.setRevoked(true);
         });
         tokenRepository.saveAll(validUserTokens);
     }

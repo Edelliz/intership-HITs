@@ -1,7 +1,7 @@
 package development.proccess.internsiphits.security;
 
 
-import development.proccess.internsiphits.domain.entity.Role;
+import development.proccess.internsiphits.domain.entity.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +25,7 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http //TODO: Разобраться почему получаю 403 вместо 401
+        http
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/test").hasAuthority(Role.UNIVERSITY_EMPLOYEE.name())

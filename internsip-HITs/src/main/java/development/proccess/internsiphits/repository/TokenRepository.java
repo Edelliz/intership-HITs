@@ -1,20 +1,20 @@
 package development.proccess.internsiphits.repository;
 
-import development.proccess.internsiphits.domain.entity.Token;
+import development.proccess.internsiphits.domain.entity.TokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface TokenRepository extends JpaRepository<Token, Integer> {
+public interface TokenRepository extends JpaRepository<TokenEntity, Integer> {
 
     @Query(value = """
-            select t from Token t inner join UserEntity u\s
+            select t from TokenEntity t inner join UserEntity u\s
             on t.user.id = u.id\s
             where u.id = :id and (t.expired = false or t.revoked = false)\s
             """)
-    List<Token> findAllValidTokenByUser(Integer id);
+    List<TokenEntity> findAllValidTokenByUser(Integer id);
 
-    Optional<Token> findByToken(String token);
+    Optional<TokenEntity> findByToken(String tokenEntity);
 }

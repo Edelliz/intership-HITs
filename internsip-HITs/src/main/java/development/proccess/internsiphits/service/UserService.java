@@ -12,12 +12,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static development.proccess.internsiphits.exception.user.UserExceptionText.USER_EXISTS_MESSAGE;
+import static development.proccess.internsiphits.exception.user.UserExceptionText.USER_NOT_FOUND_MESSAGE;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private static final String USER_NOT_FOUND_MESSAGE = "Пользователь с данным Email не найден";
-    private static final String USER_EXISTS_MESSAGE = "Пользователь с данным Email уже существует";
     private final UserRepository repository;
     private final PasswordEncoder encoder;
 
@@ -25,7 +26,7 @@ public class UserService {
         return repository.findAll();
     }
 
-    public UserEntity getUserById(Long id) {
+    public UserEntity getUserById(Integer id) {
         return repository.findById(id).orElseThrow(
                 () -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE)
         );
@@ -49,7 +50,7 @@ public class UserService {
         );
     }
 
-    public UserEntity updateUser(Long id, CreateUpdateUserDto dto) throws Exception {
+    public UserEntity updateUser(Integer id, CreateUpdateUserDto dto) throws Exception {
         try {
             UserEntity user = repository.findById(id).orElseThrow(
                     () -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE)
@@ -67,7 +68,7 @@ public class UserService {
         }
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(Integer id) {
         repository.deleteById(id);
     }
 }

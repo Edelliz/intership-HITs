@@ -1,6 +1,6 @@
 package development.proccess.internsiphits.domain.dto;
 
-import development.proccess.internsiphits.domain.entity.Role;
+import development.proccess.internsiphits.domain.entity.enums.Role;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 

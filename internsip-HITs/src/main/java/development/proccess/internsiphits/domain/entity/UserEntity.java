@@ -1,5 +1,6 @@
 package development.proccess.internsiphits.domain.entity;
 
+import development.proccess.internsiphits.domain.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,7 +41,7 @@ public class UserEntity implements UserDetails {
     private String companyName;
 
     @OneToMany(mappedBy = "user")
-    private List<Token> tokens;
+    private List<TokenEntity> tokenEntities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
