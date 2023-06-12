@@ -3,20 +3,17 @@ package development.proccess.internsiphits.service;
 import development.proccess.internsiphits.domain.dto.AuthenticationRequest;
 import development.proccess.internsiphits.domain.dto.AuthenticationResponse;
 import development.proccess.internsiphits.domain.entity.TokenEntity;
-import development.proccess.internsiphits.domain.entity.enums.TokenType;
 import development.proccess.internsiphits.domain.entity.UserEntity;
+import development.proccess.internsiphits.domain.entity.enums.TokenType;
 import development.proccess.internsiphits.repository.TokenRepository;
 import development.proccess.internsiphits.repository.UserRepository;
 import development.proccess.internsiphits.security.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
