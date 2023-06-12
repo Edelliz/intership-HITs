@@ -30,14 +30,18 @@ public class ReportController {
     public ReportResponse createReport(
             @PathVariable Integer userId,
             @RequestParam String supervisorName,
+            @RequestParam Integer characteristicId,
             @RequestParam("file") MultipartFile file
     ) throws Exception {
-        return service.createReport(userId, supervisorName, file);
+        return service.createReport(userId, supervisorName, characteristicId, file);
     }
 
-    @GetMapping("/{userId}")
-    public ReportResponse getReportInfo(@PathVariable Integer userId) {
-        return service.getReportByUserId(userId);
+    @GetMapping("/{reportId}")
+    public ResponseEntity<ReportResponse> getReportInfo(@PathVariable Integer reportId) {
+        Optional<ReportEntity> entity = service.getReportById(reportId);
+        return entity.map(
+                reportEntity -> ResponseEntity.ok(service.mapToReportResponse(reportEntity))
+        ).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/{reportId}/download")
@@ -53,13 +57,13 @@ public class ReportController {
                 .body(report.getData());
     }
 
-    @PutMapping("/{userId}")
-    public ReportResponse updateReport(@PathVariable Integer userId, @RequestBody UpdateReportDto dto) {
-        return service.updateReport(userId, dto);
+    @PutMapping("/{reportId}")
+    public ReportResponse updateReport(@PathVariable Integer reportId, @RequestBody UpdateReportDto dto) {
+        return service.updateReport(reportId, dto);
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteReport(@PathVariable Integer userId) {
-        service.deleteReport(userId);
+    @DeleteMapping("/{reportId}")
+    public void deleteReport(@PathVariable Integer reportId) {
+        service.deleteReport(reportId);
     }
 }
