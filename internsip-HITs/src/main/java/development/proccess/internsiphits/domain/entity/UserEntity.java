@@ -40,7 +40,7 @@ public class UserEntity implements UserDetails {
 
     private String companyName;
 
-    private String group;
+    private String groupName;
 
     @OneToMany(mappedBy = "user")
     private List<TokenEntity> tokenEntities;

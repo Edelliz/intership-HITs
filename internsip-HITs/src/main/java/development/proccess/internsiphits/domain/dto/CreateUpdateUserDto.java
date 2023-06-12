@@ -28,5 +28,5 @@ public class CreateUpdateUserDto {
 
     private String companyName;
 
-    private String group;
+    private String groupName;
 }
