@@ -40,6 +40,8 @@ public class UserEntity implements UserDetails {
 
     private String companyName;
 
+    private String group;
+
     @OneToMany(mappedBy = "user")
     private List<TokenEntity> tokenEntities;
 

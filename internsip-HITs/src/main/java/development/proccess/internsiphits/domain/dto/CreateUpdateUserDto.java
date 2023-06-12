@@ -27,4 +27,6 @@ public class CreateUpdateUserDto {
     private Role role;
 
     private String companyName;
+
+    private String group;
 }
