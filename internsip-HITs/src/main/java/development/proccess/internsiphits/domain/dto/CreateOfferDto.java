@@ -7,5 +7,6 @@ import lombok.Data;
 @Builder
 public class CreateOfferDto {
     private Integer companyId;
+    private Integer vacancyId;
     private Integer userId;
 }

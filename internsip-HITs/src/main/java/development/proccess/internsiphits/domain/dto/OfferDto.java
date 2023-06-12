@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class OfferDto {
     private Integer id;
-    private String priority;
+    private Integer priority;
     private String companyName;
     private UserShortDto student;
 }

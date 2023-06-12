@@ -4,6 +4,7 @@ import development.proccess.internsiphits.domain.dto.ReportResponse;
 import development.proccess.internsiphits.domain.dto.UpdateReportDto;
 import development.proccess.internsiphits.domain.entity.ReportEntity;
 import development.proccess.internsiphits.service.ReportService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,11 +22,13 @@ public class ReportController {
 
     private final ReportService service;
 
+    @Operation(summary = "Получение списка дневников практики")
     @GetMapping
     public List<ReportResponse> getAllReports() {
         return service.getAllReports();
     }
 
+    @Operation(summary = "Импорт файла дневника практики")
     @PostMapping("/{userId}")
     public ReportResponse createReport(
             @PathVariable Integer userId,
@@ -35,11 +38,13 @@ public class ReportController {
         return service.createReport(userId, supervisorName, file);
     }
 
+    @Operation(summary = "Получение информации по дневнику практики")
     @GetMapping("/{userId}")
     public ReportResponse getReportInfo(@PathVariable Integer userId) {
         return service.getReportByUserId(userId);
     }
 
+    @Operation(summary = "Экспорт дневника практики")
     @GetMapping("/{reportId}/download")
     public ResponseEntity<byte[]> getReportFile(@PathVariable Integer reportId) {
         Optional<ReportEntity> fileEntityOptional = service.getReportById(reportId);
@@ -53,11 +58,13 @@ public class ReportController {
                 .body(report.getData());
     }
 
+    @Operation(summary = "Изменение дневника практики")
     @PutMapping("/{userId}")
     public ReportResponse updateReport(@PathVariable Integer userId, @RequestBody UpdateReportDto dto) {
         return service.updateReport(userId, dto);
     }
 
+    @Operation(summary = "Удалить дневника практики")
     @DeleteMapping("/{userId}")
     public void deleteReport(@PathVariable Integer userId) {
         service.deleteReport(userId);

@@ -17,11 +17,13 @@ public class OfferEntity {
     @GeneratedValue
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    private OfferPriority priority;
+    private Integer priority;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private CompanyEntity company;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private VacancyEntity vacancy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity student;
