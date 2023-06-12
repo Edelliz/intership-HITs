@@ -59,6 +59,7 @@ public class UserService {
                         .email(dto.getEmail())
                         .password(encoder.encode(dto.getPassword()))
                         .companyName(dto.getCompanyName())
+                        .groupName(dto.getGroupName())
                         .build()
         );
     }

@@ -4,16 +4,12 @@ import development.proccess.internsiphits.domain.dto.AuthenticationRequest;
 import development.proccess.internsiphits.domain.dto.AuthenticationResponse;
 import development.proccess.internsiphits.service.TokenService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.headers.Header;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,10 +28,9 @@ public class AuthController {
 
     @Operation(summary = "Обновление токена")
     @PostMapping("/refresh-token")
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        tokenService.refreshToken(request, response);
+    public AuthenticationResponse refreshToken(
+            @RequestParam("refreshToken") String token
+    ) {
+        return tokenService.refreshToken(token);
     }
 }

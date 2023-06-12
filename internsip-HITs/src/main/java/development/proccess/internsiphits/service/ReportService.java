@@ -38,12 +38,10 @@ public class ReportService {
     private final CharacteristicsRepository characteristicsRepository;
     private final UserRepository userRepository;
 
-    public ReportResponse updateReport(Integer userId, UpdateReportDto dto) {
-        ReportEntity entity = reportRepository.findByUserId(userId);
-        if (entity == null) {
-            //TODO: Добавить полноченную обработку через exception handler
-            throw new IllegalArgumentException("There's no report with such user id");
-        }
+    public ReportResponse updateReport(Integer reportId, UpdateReportDto dto) {
+        ReportEntity entity = reportRepository.findById(reportId).orElseThrow(
+                () -> new IllegalArgumentException("There's no report with such id")
+        );
         entity.setStatus(dto.getStatus());
         entity.setMark(dto.getMark());
         reportRepository.save(entity);
@@ -59,20 +57,25 @@ public class ReportService {
         return responses;
     }
 
-    public void deleteReport(Integer userId) {
-        reportRepository.deleteByUserId(userId);
+    public void deleteReport(Integer reportId) {
+        reportRepository.deleteById(reportId);
     }
 
-    public ReportResponse createReport(Integer userId, String supervisorName, MultipartFile file) throws Exception {
+    public ReportResponse createReport(
+            Integer userId,
+            String supervisorName,
+            Integer characteristicId,
+            MultipartFile file
+    ) throws Exception {
         UserEntity user = userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE)
         );
-        CharacteristicsEntity characteristic = characteristicsRepository.findByUserId(userId);
-        if (characteristic == null) {
+        Optional<CharacteristicsEntity> characteristic = characteristicsRepository.findById(characteristicId);
+        if (characteristic.isEmpty()) {
             throw new CharacteristicsException("There's no characteristics for this user");
         }
         try (FileInputStream template = new FileInputStream(ResourceUtils.getFile(TEMPLATE_PATH))) {
-            byte[] bytes = setData(supervisorName, characteristic.getContent(), user, template, file);
+            byte[] bytes = setData(supervisorName, characteristic.get().getContent(), user, template, file);
             ReportEntity fileEntity = new ReportEntity();
             fileEntity.setUserId(userId);
             fileEntity.setName("test.docx");
@@ -179,7 +182,7 @@ public class ReportService {
         return mapToReportResponse(reportRepository.findByUserId(userId));
     }
 
-    private ReportResponse mapToReportResponse(ReportEntity reportEntity) {
+    public ReportResponse mapToReportResponse(ReportEntity reportEntity) {
         String downloadURL = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/reports/")
                 .path(String.valueOf(reportEntity.getId()))
