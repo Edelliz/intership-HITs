@@ -69,9 +69,8 @@ public class TokenService {
     }
 
     public AuthenticationResponse refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
+            HttpServletRequest request
+    ) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
@@ -87,11 +86,10 @@ public class TokenService {
                 var accessToken = jwtService.generateToken(user);
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
-                var authResponse = AuthenticationResponse.builder()
+                return AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
-                return authResponse;
             }
         }
         return null;
