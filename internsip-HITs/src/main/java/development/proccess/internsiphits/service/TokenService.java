@@ -1,6 +1,5 @@
 package development.proccess.internsiphits.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import development.proccess.internsiphits.domain.dto.AuthenticationRequest;
 import development.proccess.internsiphits.domain.dto.AuthenticationResponse;
 import development.proccess.internsiphits.domain.entity.TokenEntity;
@@ -69,7 +68,7 @@ public class TokenService {
         tokenRepository.saveAll(validUserTokens);
     }
 
-    public void refreshToken(
+    public AuthenticationResponse refreshToken(
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
@@ -77,7 +76,7 @@ public class TokenService {
         final String refreshToken;
         final String userEmail;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
+            return null;
         }
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
@@ -92,8 +91,9 @@ public class TokenService {
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+                return authResponse;
             }
         }
+        return null;
     }
 }
