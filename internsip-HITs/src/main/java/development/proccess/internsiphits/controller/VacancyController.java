@@ -4,6 +4,7 @@ import development.proccess.internsiphits.domain.dto.VacancyDto;
 import development.proccess.internsiphits.domain.dto.CreateVacancyDto;
 import development.proccess.internsiphits.domain.dto.UpdateVacancyDto;
 import development.proccess.internsiphits.service.VacancyService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,30 +26,35 @@ public class VacancyController {
 
     private final VacancyService service;
 
+    @Operation(summary = "Создание вакансии")
     @PostMapping
     @PreAuthorize("hasAnyRole('UNIVERSITY_EMPLOYEE', 'COMPANY_EMPLOYEE')")
     public VacancyDto createVacancy(@RequestBody CreateVacancyDto dto, @PathVariable Integer companyId) {
         return service.createVacancy(dto, companyId);
     }
 
+    @Operation(summary = "Получение вакансии")
     @GetMapping(ID)
     @PreAuthorize("hasAnyRole('UNIVERSITY_EMPLOYEE', 'COMPANY_EMPLOYEE', 'STUDENT')")
     public VacancyDto getVacancy(@PathVariable Integer id, @PathVariable Integer companyId) {
         return service.getVacancy(id);
     }
 
+    @Operation(summary = "Получение всех вакансий компании")
     @GetMapping()
     @PreAuthorize("hasAnyRole('UNIVERSITY_EMPLOYEE', 'COMPANY_EMPLOYEE', 'STUDENT')")
     public List<VacancyDto> getVacancies(@PathVariable Integer companyId) {
         return service.getVacancies(companyId);
     }
 
+    @Operation(summary = "Удаление вакансии")
     @DeleteMapping(ID)
     @PreAuthorize("hasAnyRole('UNIVERSITY_EMPLOYEE', 'COMPANY_EMPLOYEE')")
     public void deleteVacancy(@PathVariable Integer id, @PathVariable Integer companyId) {
         service.deleteVacancy(id);
     }
 
+    @Operation(summary = "Обновление вакансии")
     @PatchMapping(ID)
     @PreAuthorize("hasAnyRole('UNIVERSITY_EMPLOYEE', 'COMPANY_EMPLOYEE')")
     public VacancyDto updateVacancy(
