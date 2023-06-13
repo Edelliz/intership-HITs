@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @Operation(summary = "Получить пользователя по Email")
-    @GetMapping
+    @GetMapping("/email")
     public ResponseEntity<UserEntity> getStudentByEmail(
             @RequestParam String email
     ) {
