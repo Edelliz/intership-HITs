@@ -6,11 +6,13 @@ import development.proccess.internsiphits.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -35,6 +37,15 @@ public class UserController {
         return service.getUserById(id);
     }
 
+    @Operation(summary = "Получить пользователя по Email")
+    @GetMapping
+    public ResponseEntity<UserEntity> getStudentByEmail(
+            @RequestParam String email
+    ) {
+        Optional<UserEntity> entity = service.getByEmail(email);
+        return entity.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @Operation(summary = "Создание пользователя")
     @PostMapping
     public UserEntity createStudent(
@@ -47,7 +58,7 @@ public class UserController {
     @PutMapping(ID)
     public UserEntity updateUser(
             @PathVariable Integer id,
-            @RequestBody @Valid CreateUpdateUserDto dto
+            @RequestBody CreateUpdateUserDto dto
     ) throws Exception {
         return service.updateUser(id, dto);
     }

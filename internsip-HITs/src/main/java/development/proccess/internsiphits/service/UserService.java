@@ -6,6 +6,7 @@ import development.proccess.internsiphits.domain.entity.enums.Role;
 import development.proccess.internsiphits.exception.user.UserAlreadyExistsException;
 import development.proccess.internsiphits.exception.user.UserNotFoundException;
 import development.proccess.internsiphits.repository.UserRepository;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -44,6 +45,10 @@ public class UserService {
         );
     }
 
+    public Optional<UserEntity> getByEmail(String email) {
+        return repository.findByEmail(email);
+    }
+
     @Transactional
     public UserEntity createUser(CreateUpdateUserDto dto) throws Exception {
         Optional<UserEntity> user = repository.findByEmail(dto.getEmail());
@@ -70,13 +75,30 @@ public class UserService {
             UserEntity user = repository.findById(id).orElseThrow(
                     () -> new UserNotFoundException(USER_NOT_FOUND_MESSAGE)
             );
-            user.setName(dto.getName()); //TODO: написать маппер
-            user.setLastName(dto.getLastName());
-            user.setSurname(dto.getSurname());
-            user.setRole(dto.getRole());
-            user.setEmail(dto.getEmail());
-            user.setPassword(dto.getPassword());
-            user.setCompanyName(dto.getCompanyName());
+            if (StringUtils.isNotEmpty(dto.getName())) {
+                user.setName(dto.getName());
+            }
+            if (StringUtils.isNotEmpty(dto.getLastName())) {
+                user.setLastName(dto.getLastName());
+            }
+            if (StringUtils.isNotEmpty(dto.getSurname())) {
+                user.setSurname(dto.getSurname());
+            }
+            if (dto.getRole() != null) {
+                user.setRole(dto.getRole());
+            }
+            if (StringUtils.isNotEmpty(dto.getEmail())) {
+                if (repository.findByEmail(dto.getEmail()).isPresent()) {
+                    throw new UserAlreadyExistsException("Email already exists");
+                }
+                user.setEmail(dto.getEmail());
+            }
+            if (StringUtils.isNotEmpty(dto.getPassword())) {
+                user.setPassword(encoder.encode(dto.getPassword()));
+            }
+            if (StringUtils.isNotEmpty(dto.getCompanyName())) {
+                user.setCompanyName(dto.getCompanyName());
+            }
             return repository.save(user);
         } catch (Exception e) {
             throw new Exception(e);

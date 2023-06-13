@@ -39,11 +39,6 @@ public class ReportController {
         return service.createReport(userId, supervisorName, characteristicId, file);
     }
 
-    @Operation(summary = "Получение информации по дневнику практики")
-    @GetMapping("/{userId}")
-    public ReportResponse getReportInfo(@PathVariable Integer userId) {
-        return service.getReportByUserId(userId);
-
     @GetMapping("/{reportId}")
     public ResponseEntity<ReportResponse> getReportInfo(@PathVariable Integer reportId) {
         Optional<ReportEntity> entity = service.getReportById(reportId);
@@ -67,26 +62,14 @@ public class ReportController {
                 .body(report.getData());
     }
 
-
     @Operation(summary = "Изменение дневника практики")
     @PutMapping("/{userId}")
     public ReportResponse updateReport(@PathVariable Integer userId, @RequestBody UpdateReportDto dto) {
         return service.updateReport(userId, dto);
     }
 
-    @Operation(summary = "Удалить дневника практики")
-    @DeleteMapping("/{userId}")
-    public void deleteReport(@PathVariable Integer userId) {
-        service.deleteReport(userId);
-
-    @PutMapping("/{reportId}")
-    public ReportResponse updateReport(@PathVariable Integer reportId, @RequestBody UpdateReportDto dto) {
-        return service.updateReport(reportId, dto);
-    }
-
     @DeleteMapping("/{reportId}")
-    public void deleteReport(@PathVariable Integer reportId) {
+    public void deleteReport (@PathVariable Integer reportId){
         service.deleteReport(reportId);
-
     }
 }
