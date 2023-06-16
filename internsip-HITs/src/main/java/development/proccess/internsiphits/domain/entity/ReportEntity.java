@@ -30,4 +30,8 @@ public class ReportEntity {
 
     @Lob
     private byte[] data;
+
+    private String username;
+
+    private String group;
 }

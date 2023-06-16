@@ -82,7 +82,9 @@ public class ReportService {
             fileEntity.setContentType("application/msword");
             fileEntity.setData(bytes);
             fileEntity.setSize((long) bytes.length);
-            fileEntity.setStatus(ReportStatus.CREATED);
+            fileEntity.setStatus(ReportStatus.REVIEW);
+            fileEntity.setUsername(user.getSurname() + " " + user.getName() + " " + user.getLastName());
+            fileEntity.setGroup(user.getGroupName());
             fileEntity = reportRepository.save(fileEntity);
             return mapToReportResponse(fileEntity);
         } catch (Exception e) {
@@ -197,6 +199,8 @@ public class ReportService {
         fileResponse.setUrl(downloadURL);
         fileResponse.setMark(reportEntity.getMark());
         fileResponse.setStatus(reportEntity.getStatus());
+        fileResponse.setGroup(reportEntity.getGroup());
+        fileResponse.setUsername(reportEntity.getUsername());
 
         return fileResponse;
     }

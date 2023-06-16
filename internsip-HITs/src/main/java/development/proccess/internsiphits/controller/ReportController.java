@@ -63,9 +63,9 @@ public class ReportController {
     }
 
     @Operation(summary = "Изменение дневника практики")
-    @PutMapping("/{userId}")
-    public ReportResponse updateReport(@PathVariable Integer userId, @RequestBody UpdateReportDto dto) {
-        return service.updateReport(userId, dto);
+    @PutMapping("/{reportId}")
+    public ReportResponse updateReport(@PathVariable Integer reportId, @RequestBody UpdateReportDto dto) {
+        return service.updateReport(reportId, dto);
     }
 
     @DeleteMapping("/{reportId}")

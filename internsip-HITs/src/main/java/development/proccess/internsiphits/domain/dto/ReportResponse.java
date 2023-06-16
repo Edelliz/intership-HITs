@@ -22,4 +22,8 @@ public class ReportResponse {
     private Mark mark;
 
     private ReportStatus status;
+
+    private String username;
+
+    private String group;
 }
