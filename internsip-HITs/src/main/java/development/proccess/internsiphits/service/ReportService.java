@@ -75,8 +75,9 @@ public class ReportService {
         if (characteristic.isEmpty()) {
             throw new CharacteristicsException("There's no characteristics for this user");
         }
-        if (reportRepository.findByUserId(userId) != null) {
-            throw new ReportException("Report for this user is already exists");
+        ReportEntity report = reportRepository.findByUserId(userId);
+        if (report != null) {
+            deleteReport(report.getId());
         }
         try (FileInputStream template = new FileInputStream(ResourceUtils.getFile(TEMPLATE_PATH))) {
             byte[] bytes = setData(supervisorName, characteristic.get().getContent(), user, template, file);
