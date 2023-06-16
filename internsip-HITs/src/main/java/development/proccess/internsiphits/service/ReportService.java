@@ -8,6 +8,7 @@ import development.proccess.internsiphits.domain.entity.UserEntity;
 import development.proccess.internsiphits.domain.entity.enums.ReportStatus;
 import development.proccess.internsiphits.domain.entity.enums.SupervisorName;
 import development.proccess.internsiphits.exception.characteristics.CharacteristicsException;
+import development.proccess.internsiphits.exception.report.ReportException;
 import development.proccess.internsiphits.exception.user.UserNotFoundException;
 import development.proccess.internsiphits.repository.CharacteristicsRepository;
 import development.proccess.internsiphits.repository.ReportRepository;
@@ -73,6 +74,9 @@ public class ReportService {
         Optional<CharacteristicsEntity> characteristic = characteristicsRepository.findById(characteristicId);
         if (characteristic.isEmpty()) {
             throw new CharacteristicsException("There's no characteristics for this user");
+        }
+        if (reportRepository.findByUserId(userId) != null) {
+            throw new ReportException("Report for this user is already exists");
         }
         try (FileInputStream template = new FileInputStream(ResourceUtils.getFile(TEMPLATE_PATH))) {
             byte[] bytes = setData(supervisorName, characteristic.get().getContent(), user, template, file);
