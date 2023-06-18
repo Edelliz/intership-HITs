@@ -33,5 +33,5 @@ public class ReportEntity {
 
     private String username;
 
-    private String group;
+    private String groupName;
 }

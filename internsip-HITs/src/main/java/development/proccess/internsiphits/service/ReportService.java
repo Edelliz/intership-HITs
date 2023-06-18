@@ -80,7 +80,7 @@ public class ReportService {
             fileEntity.setSize((long) bytes.length);
             fileEntity.setStatus(ReportStatus.REVIEW);
             fileEntity.setUsername(user.getSurname() + " " + user.getName() + " " + user.getLastName());
-            fileEntity.setGroup(user.getGroupName());
+            fileEntity.setGroupName(user.getGroupName());
             fileEntity = reportRepository.save(fileEntity);
             return mapToReportResponse(fileEntity);
         } catch (Exception e) {
@@ -195,7 +195,7 @@ public class ReportService {
         fileResponse.setUrl(downloadURL);
         fileResponse.setMark(reportEntity.getMark());
         fileResponse.setStatus(reportEntity.getStatus());
-        fileResponse.setGroup(reportEntity.getGroup());
+        fileResponse.setGroup(reportEntity.getGroupName());
         fileResponse.setUsername(reportEntity.getUsername());
 
         return fileResponse;
